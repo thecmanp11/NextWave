@@ -1,0 +1,33 @@
+# --- Rust ---
+target/
+**/*.rs.bk
+
+# --- PyO3 / maturin build output ---
+*.so
+*.pyd
+*.dylib
+*.whl
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# --- Downloaded / generated data ---
+data/
+*.nc
+*.parquet
+forecast.json
+events.json
+
+# --- Secrets ---
+.env
+.venv
+*.env
+*.venv
+*venv
+*-credentials.json
+service-account*.json
+secrets.md
