@@ -102,8 +102,7 @@ fn solar_elevation_degrees(time: DateTime<FixedOffset>, lat: f64, lon: f64) -> f
     let julian_day = unix_seconds / 86_400.0 + 2_440_587.5;
     let century = (julian_day - 2_451_545.0) / 36_525.0;
 
-    let mean_longitude =
-        (280.46646 + century * (36_000.76983 + century * 0.0003032)).rem_euclid(360.0);
+    let mean_longitude = (280.46646 + century * (36_000.76983 + century * 0.0003032)).rem_euclid(360.0);
     let mean_anomaly = 357.52911 + century * (35_999.05029 - 0.0001537 * century);
     let eccentricity = 0.016708634 - century * (0.000042037 + 0.0000001267 * century);
     let anomaly_rad = mean_anomaly.to_radians();
@@ -117,7 +116,7 @@ fn solar_elevation_degrees(time: DateTime<FixedOffset>, lat: f64, lon: f64) -> f
 
     let mean_obliquity = 23.0
         + (26.0 + (21.448 - century * (46.815 + century * (0.00059 - century * 0.001813))) / 60.0)
-            / 60.0;
+        / 60.0;
     let obliquity = mean_obliquity + 0.00256 * omega.cos();
     let declination = (obliquity.to_radians().sin() * apparent_longitude.to_radians().sin()).asin();
 
@@ -139,7 +138,7 @@ fn solar_elevation_degrees(time: DateTime<FixedOffset>, lat: f64, lon: f64) -> f
     let latitude = lat.to_radians();
     let cos_zenith = (latitude.sin() * declination.sin()
         + latitude.cos() * declination.cos() * hour_angle.cos())
-    .clamp(-1.0, 1.0);
+        .clamp(-1.0, 1.0);
 
     90.0 - cos_zenith.acos().to_degrees()
 }
@@ -211,30 +210,6 @@ fn range_score(x: f64, lo: f64, hi: f64, soft: f64) -> f64 {
         (1.0 - d / soft).clamp(0.0, 1.0)
     }
 }
-
-// fn score(spot: &Spot, h: &Hour, hs: f64, rel: WindRel) -> f64 {
-//     let (lo, hi) = spot.ideal_hs.unwrap_or((spot.min_hs * 1.5, spot.max_hs * 0.7));
-//     let size = range_score(hs, lo, hi, (hi - lo).max(0.5));
-//     let period = range_score(h.tp, spot.ideal_period.0, spot.ideal_period.1, 3.0);
-//     let dir = 1.0 - (angdiff(h.wave_dir, spot.facing).abs() / spot.window).clamp(0.0, 1.0);
-//     let wind = match rel {
-//         WindRel::Offshore => 1.0,
-//         WindRel::Cross => 0.6,
-//         WindRel::Onshore => {
-//             if spot.driver_wind_dir.is_some() {
-//                 0.7 // meltemi spots: onshore is the point
-//             } else {
-//                 0.4 * (1.0 - h.wind_kn / spot.max_onshore_kn).clamp(0.0, 1.0)
-//             }
-//         }
-//     };
-//     let clean = if spot.use_wind_waves {
-//         1.0
-//     } else {
-//         h.hs_sw.map(|s| (s / h.hs).clamp(0.0, 1.0)).unwrap_or(0.5)
-//     };
-//     100.0 * (0.30 * size + 0.20 * period + 0.15 * dir + 0.25 * wind + 0.10 * clean)
-// }
 
 fn score(spot: &Spot, h: &Hour, _hs: f64, rel: WindRel) -> f64 {
     let ideal = spot.ideal_power_kw_m.unwrap_or(8.0);
