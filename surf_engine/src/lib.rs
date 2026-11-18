@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Clone)]
 pub struct Spot {
+    // req
     pub lat: f64,
     pub lon: f64,
     pub facing: f64,
@@ -16,6 +17,8 @@ pub struct Spot {
     pub max_offshore_kn: f64,
     #[serde(default)]
     pub use_wind_waves: bool,
+    // nullable
+    pub ideal_swell_dir: Option<(f64, f64)>,
     pub ideal_hs: Option<(f64, f64)>,
     pub driver_wind_dir: Option<(f64, f64)>,
     pub min_driver_wind_kn: Option<f64>,
@@ -151,17 +154,14 @@ pub fn evaluate(spot: &Spot, h: &Hour) -> HourEval {
     } else {
         h.hs_sw.unwrap_or(h.hs)
     };
-
-    // LAST LIGHT: -0.833 degrees is sunrise/set, -6 is "civil twilight"
-    if solar_elevation_degrees(h.time, spot.lat, spot.lon) <= -8.33 {
-        why.push("nighttime");
-    }
+    // Seasonal params
     if let Some((a, b)) = spot.season_months {
         let m = h.time.month();
         if m < a || m > b {
             why.push("off season");
         }
     }
+    // Size Check
     if hs < spot.min_hs {
         why.push("too small");
     }
@@ -171,8 +171,13 @@ pub fn evaluate(spot: &Spot, h: &Hour) -> HourEval {
     if h.tp < spot.min_period {
         why.push("period too short");
     }
+    // Swell direction
     if angdiff(h.wave_dir, spot.facing).abs() > spot.window {
         why.push("swell outside window");
+    }
+    // Power Check
+    if let Some(min) = spot.min_power_kw_m {
+        if h.power_kw_m < min { why.push("too weak"); }
     }
 
     let rel = wind_rel(spot, h);
@@ -185,6 +190,10 @@ pub fn evaluate(spot: &Spot, h: &Hour) -> HourEval {
         if !(in_arc(h.wind_dir, dir) && h.wind_kn >= min) {
             why.push("no meltemi driver");
         }
+    }
+    // LAST LIGHT: -0.833 degrees is sunrise/set, -6 is "civil twilight"
+    if solar_elevation_degrees(h.time, spot.lat, spot.lon) <= -8.33 {
+        why.push("nighttime");
     }
 
     let surfable = why.is_empty();
