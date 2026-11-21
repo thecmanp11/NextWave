@@ -19,7 +19,7 @@ BBOX = dict(minimum_longitude=18.0, maximum_longitude=30.5,minimum_latitude=33.5
 
 # time
 now = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0, tzinfo=None)
-START, END = now - timedelta(hours=6), now + timedelta(days=7)
+START, END = now - timedelta(hours=6), now + timedelta(days=8)
 
 # Extract a point (snaps to nearest sea cell, since coastal cells can be NaN)
 def nearest_ocean_cell(da2d, lat, lon):
@@ -28,6 +28,7 @@ def nearest_ocean_cell(da2d, lat, lon):
     dist = np.where(np.isnan(da2d.values), np.inf, dist)
     return np.unravel_index(dist.argmin(), dist.shape)
 
+# TODO: redundant .load() per spot - move outside, run once and pass it in
 def wave_point(ds, lat, lon, variables):
     first = ds["VHM0"].isel(time=0).load()
     i, j = nearest_ocean_cell(first, lat, lon)
@@ -65,6 +66,7 @@ def build_frame(waves, wind, spot):
     df["swell_off"] = angdiff(df["VMDR"], spot["facing"]).abs()
     df["in_window"] = df["swell_off"] <= spot["window"]
 
+    # TODO: not sure if this is passed into Rust, I think it's duplicated there...
     w_off = angdiff(df["wind_dir"], spot["facing"]).abs()
     df["wind_rel"] = np.where(w_off >= 120, "offshore",
                       np.where(w_off <= 60, "onshore", "cross"))
@@ -100,27 +102,51 @@ def main():
     # cmems_mod_med_wav_anfc_4.2km_PT1H-i
     # cmems_mod_med_wav_anfc_4.2km_static
     WAVE_DATASET_ID = "cmems_mod_med_wav_anfc_4.2km_PT1H-i"
-    WAVE_VARS = ["VHM0", "VTPK", "VTM10", "VMDR",
-             "VHM0_WW", "VTM01_WW", "VMDR_WW",
-             "VHM0_SW1", "VTM01_SW1", "VMDR_SW1"]
+    # WAVE_VARS = ["VHM0", "VTPK", "VTM10", "VMDR",
+    #          "VHM0_WW", "VTM01_WW", "VMDR_WW",
+    #          "VHM0_SW1", "VTM01_SW1", "VMDR_SW1"]
+    WAVE_VARS = [
+        # Total sea
+        "VHM0", "VTPK", "VTM10", "VMDR",
+        # Wind sea
+        "VHM0_WW","VTM01_WW","VMDR_WW",
+        # Primary swell
+        "VHM0_SW1", "VTM01_SW1", "VMDR_SW1",
+        # Secondary swell
+        "VHM0_SW2", "VTM01_SW2","VMDR_SW2",
+    ]
+
+    STATIC_DATASET_ID = "cmems_mod_med_wav_anfc_4.2km_static"
+
 
     # TODO: SKIP DOWNLOAD while testing!!!!
     # Download once to a local NetCDF. Tight bbox around your spots keeps it small.
-    # copernicusmarine.subset(
-    #     dataset_id=WAVE_DATASET_ID,
-    #     variables=WAVE_VARS,
-    #     start_datetime=START.strftime("%Y-%m-%dT%H:%M:%S"),
-    #     end_datetime=END.strftime("%Y-%m-%dT%H:%M:%S"),
-    #     output_filename="waves.nc",
-    #     output_directory="data",
-    #     overwrite=True,
-    #     **BBOX,
-    # )
+    copernicusmarine.subset(
+        dataset_id=STATIC_DATASET_ID,
+        output_filename="static.nc",
+        output_directory="data",
+        overwrite=True,
+        **BBOX,
+    )
+    copernicusmarine.subset(
+        dataset_id=WAVE_DATASET_ID,
+        variables=WAVE_VARS,
+        start_datetime=START.strftime("%Y-%m-%dT%H:%M:%S"),
+        end_datetime=END.strftime("%Y-%m-%dT%H:%M:%S"),
+        output_filename="waves.nc",
+        output_directory="data",
+        overwrite=True,
+        **BBOX,
+    )
 
     # local in-mem file downloaded data
-    ds = xr.open_dataset("data/waves.nc").load()
+    # ds = xr.open_dataset("data/waves.nc").load()
     # show all variables (will just be the ones filtered from my list)
     # ds.data_vars
+    with xr.open_dataset("data/static.nc") as s_raw:
+        stc = s_raw.load()
+    with xr.open_dataset("data/waves.nc") as w_raw:
+        ds = w_raw.load()
 
     frames = {}
     for name, s in SPOTS.items():
@@ -133,7 +159,7 @@ def main():
 
     # DUMP to Rust Surf Engine
     # spots (tuples become JSON arrays automatically)
-    json.dump(SPOTS, open("surf_engine/spots.json", "w"))
+    # json.dump(SPOTS, open("surf_engine/spots.json", "w"))
 
     # forecasts: drop NaN rows, one list of hourly records per spot
     need = ["VHM0", "VTPK", "VTM10", "VMDR", "wind_kn", "wind_dir", "power_kw_m"]
@@ -141,7 +167,12 @@ def main():
         name: json.loads(df.dropna(subset=need).reset_index().to_json(orient="records", date_format="iso"))
         for name, df in frames.items()
     }
-    json.dump(forecast, open("surf_engine/forecast.json", "w"))
+    # json.dump(forecast, open("surf_engine/forecast.json", "w"))
+    os.makedirs("surf_engine", exist_ok=True)
+    with open("surf_engine/spots.json", "w", encoding="utf-8") as f:
+        json.dump(SPOTS, f)
+    with open("surf_engine/forecast.json", "w", encoding="utf-8") as f:
+        json.dump(forecast, f)
 
     # Run Rust engine via subprocess
     print("Running Rust surf engine...")
@@ -161,8 +192,10 @@ def main():
     print("Rust engine finished successfully.")
     print(results)
 
-    # TODO: temp write locally
-    json.dump(results, open("local_results.json", "w"))
+    # TODO: temp write locally before firebase is implemented
+    # json.dump(results, open("local_results.json", "w"))
+    with open("local_results.json", "w", encoding="utf-8") as f:
+        json.dump(json.loads(out.stdout), f, indent=2)
 
     # TODO: write to firestore
     # Write to Firestore

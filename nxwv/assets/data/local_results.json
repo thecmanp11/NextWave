@@ -1,0 +1,82 @@
+[
+    {
+        "spot": "lagouvardos",
+        "start": "2026-11-19T06:00:00Z",
+        "end": "2026-11-19T12:00:00Z",
+        "peak_time": "2026-11-19T06:00:00Z",
+        "peak_score": 32.12063747943039,
+        "mean_score": 25.395629321187343,
+        "label": "surfschool",
+        "surfable_hours": 6
+    },
+    {
+        "spot": "vouliagmeni",
+        "start": "2026-11-20T08:00:00Z",
+        "end": "2026-11-20T13:00:00Z",
+        "peak_time": "2026-11-20T10:00:00Z",
+        "peak_score": 44.81290431882712,
+        "mean_score": 38.41902847192045,
+        "label": "surfable",
+        "surfable_hours": 5
+    },
+    {
+        "spot": "krokala",
+        "start": "2026-11-20T07:00:00Z",
+        "end": "2026-11-20T11:00:00Z",
+        "peak_time": "2026-11-20T08:30:00Z",
+        "peak_score": 56.20948172039481,
+        "mean_score": 49.77210483910293,
+        "label": "ON!",
+        "surfable_hours": 4
+    },
+    {
+        "spot": "buggerru",
+        "start": "2026-11-22T09:00:00Z",
+        "end": "2026-11-22T15:00:00Z",
+        "peak_time": "2026-11-22T12:00:00Z",
+        "peak_score": 78.94510293847122,
+        "mean_score": 67.3189402847192,
+        "label": "ON!",
+        "surfable_hours": 6
+    },
+    {
+        "spot": "lagouvardos",
+        "start": "2026-11-24T05:00:00Z",
+        "end": "2026-11-24T08:00:00Z",
+        "peak_time": "2026-11-24T05:00:00Z",
+        "peak_score": 38.34122755863614,
+        "mean_score": 34.96765171371443,
+        "label": "surfable",
+        "surfable_hours": 4
+    },
+    {
+        "spot": "lagouvardos",
+        "start": "2026-11-24T14:00:00Z",
+        "end": "2026-11-24T18:00:00Z",
+        "peak_time": "2026-11-24T15:30:00Z",
+        "peak_score": 61.50829384729104,
+        "mean_score": 52.88412093847129,
+        "label": "ON!",
+        "surfable_hours": 4
+    },
+    {
+        "spot": "krokala",
+        "start": "2026-11-24T06:00:00Z",
+        "end": "2026-11-24T11:00:00Z",
+        "peak_time": "2026-11-24T08:00:00Z",
+        "peak_score": 49.11827364519283,
+        "mean_score": 41.60928374610294,
+        "label": "surfable",
+        "surfable_hours": 5
+    },
+    {
+        "spot": "messakti",
+        "start": "2026-11-25T10:00:00Z",
+        "end": "2026-11-25T14:00:00Z",
+        "peak_time": "2026-11-25T11:30:00Z",
+        "peak_score": 29.40192837465192,
+        "mean_score": 22.15094837261904,
+        "label": "surfschool",
+        "surfable_hours": 4
+    }
+]

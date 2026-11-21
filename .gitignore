@@ -16,7 +16,6 @@ venv/
 .ipynb_checkpoints/
 
 # --- Downloaded / generated data ---
-data/
 *.nc
 *.parquet
 forecast.json
