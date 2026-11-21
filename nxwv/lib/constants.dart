@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 
-const kNwMint = Color.fromARGB(255, 75, 255, 205);
+const kNwSurf = Color.fromARGB(
+  255,
+  75,
+  255,
+  205,
+); // seafoam, make this for works
+const kNwMint = Color.fromARGB(
+  255,
+  131,
+  255,
+  147,
+); // more minty // make this for ON!
 
 const kNwLBlue = Color.fromARGB(255, 53, 230, 255);
 
@@ -76,8 +87,13 @@ extension TextStyleColorExtension on TextStyle {
   /// Maps any color to the text style
   TextStyle c(Color color) => copyWith(color: color);
 
-  /// Quick shorthand for white (since it's your primary default text)
+  /// Quick shorthand for white
   TextStyle get white => copyWith(color: Colors.white);
+}
+
+extension TextStyleBoldExtension on TextStyle {
+  /// Maps any color to the text style
+  TextStyle bold() => copyWith(fontWeight: FontWeight.bold);
 }
 
 // --- App Theme Setup ---

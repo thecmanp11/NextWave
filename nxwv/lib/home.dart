@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nxwv/constants.dart';
-import 'package:nxwv/widgets/flat.dart';
+import 'package:nxwv/surf_events/scrolls/surf_event_scroll.dart';
+import 'package:nxwv/surf_events/ui/surf_event_filters.dart';
 
 class HomeBase extends StatelessWidget {
   const new({super.key});
@@ -12,18 +12,8 @@ class HomeBase extends StatelessWidget {
 
       body: Column(
         children: [
-          Text('Surfability Meter', style: NwTextStyles.title),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text('surfschool', style: NwTextStyles.subtitle.c(kNwPeri)),
-              Text('surfable', style: NwTextStyles.subtitle.c(kNwLBlue)),
-              Text('working', style: NwTextStyles.subtitle.c(kNwMint)),
-              Text('ON', style: NwTextStyles.subtitle.c(kNwMint)),
-            ],
-          ),
-
-          FlatTruck(),
+          // SurfEventFilters(),
+          SurfEventScroll(),
         ],
       ),
     );

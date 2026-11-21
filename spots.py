@@ -25,6 +25,7 @@ SPOTS["lagouvardos"] = dict(
     offshore_dir=(40, 130),        # clean
     max_onshore_kn=8,              # beyond this, wind waves dominate and it gets messy
     max_offshore_kn=20,            # beyond this, it blows the face out flat
+    max_crossshore_kn=10,
 
     # Type
     break_type="beach",
@@ -55,8 +56,9 @@ SPOTS["krokala"] = dict(
 
     # Wind, relative to facing 265 (offshore blows from the east)
     offshore_dir=(45, 135),
-    max_onshore_kn=8, 
-    max_offshore_kn=20,
+    max_onshore_kn=15, 
+    max_offshore_kn=25,
+    max_crossshore_kn=20,
 
     # Type
     break_type="beach",
@@ -89,9 +91,7 @@ SPOTS["vouliagmeni"] = dict(
     offshore_dir=(320, 40),        # wraps through 0, so use angdiff(), not a plain range check
     max_onshore_kn=15,             # south wind makes the waves here, but too much turns it to mush
     max_offshore_kn=20,
-
-    # Swell source
-    use_wind_waves=True,           # judge on total Hs / VHM0_WW, not only the SW1 swell partition
+    max_crossshore_kn=15,
 
     break_type="beach/bay",
     notes="Saronic Gulf: only works on S/SSW wind events (notos). Short period, wind dependent.",
@@ -123,12 +123,7 @@ SPOTS["messakti"] = dict(
     offshore_dir=(140, 220),
     max_onshore_kn=30,               # meltemi IS onshore here, so the cap is high
     max_offshore_kn=20,
-
-    # Meltemi driver
-    use_wind_waves=True,             # judge on total Hs / VHM0_WW, not the swell partition
-    driver_wind_dir=(340, 50),       # N to NE
-    min_driver_wind_kn=15,           # needs a real meltemi, not just a breeze
-    season_months=(6, 9),            # Jun-Sep; peaks Jul-Aug
+    max_crossshore_kn=30,
 
     break_type="beach/bay",
     notes="Works almost only on summer meltemi wind-sea. Wind and waves arrive together.",
@@ -138,4 +133,5 @@ SPOTS["messakti"] = dict(
 
 
 
-# TODO: manual run to update spots in firestore/where ever
+# TODO: manual run to update spots in firestore/where ever 
+# OR keep it hard coded json in proj???
