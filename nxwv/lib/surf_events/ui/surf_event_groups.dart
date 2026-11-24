@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nxwv/constants.dart';
 import 'package:nxwv/models/spot_model.dart';
 import 'package:nxwv/models/surf_event_model.dart';
+import 'package:nxwv/widgets/hourly_score_bar_chart.dart';
 import 'package:nxwv/widgets/regional_icon.dart';
 
 class SpotEventsGroup {
@@ -197,31 +198,38 @@ class SpotSubSection extends StatelessWidget {
                   children: [
                     SizedBox(width: 55),
 
-                    // TIME RANGE
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        // color: kNwPeri.withValues(alpha: 0.12),
-                        color: surfability.color.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          // color: kNwPeri.withValues(alpha: 0.45),
-                          color: surfability.color.withValues(alpha: 0.45),
+                    Column(
+                      children: [
+                        SurfabilityIcon(
+                          surfability: event.label,
+                          hourlyScores: event.hourlyScores,
                         ),
-                      ),
-                      child: Text(
-                        _formatTimeWindow(event.start, event.end),
-                        // style: NwTextStyles.bodySmall.c(kNwPeri),
-                        style: NwTextStyles.bodySmall.c(surfability.color),
-                      ),
+
+                        const SizedBox(height: 4),
+
+                        // TIME RANGE
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            // color: kNwPeri.withValues(alpha: 0.12),
+                            color: surfability.color.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              // color: kNwPeri.withValues(alpha: 0.45),
+                              color: surfability.color.withValues(alpha: 0.45),
+                            ),
+                          ),
+                          child: Text(
+                            _formatTimeWindow(event.start, event.end),
+                            // style: NwTextStyles.bodySmall.c(kNwPeri),
+                            style: NwTextStyles.bodySmall.c(surfability.color),
+                          ),
+                        ),
+                      ],
                     ),
-
-                    const SizedBox(width: 10),
-
-                    SurfabilityIcon(surfability: event.label),
                   ],
                 );
               }).toList(),
@@ -234,14 +242,20 @@ class SpotSubSection extends StatelessWidget {
 }
 
 class SurfabilityIcon extends StatelessWidget {
-  const new({super.key, required this.surfability});
+  const new({
+    super.key,
+    required this.surfability,
+    this.hourlyScores,
+  });
 
   final Surfability surfability;
+  final Map<DateTime, double>? hourlyScores;
 
   @override
   Widget build(BuildContext context) {
     final name = surfability.name;
     final color = surfability.color;
+
     return Container(
       child: Row(
         // mainAxisAlignment: MainAxisAlignment.center,
@@ -253,18 +267,21 @@ class SurfabilityIcon extends StatelessWidget {
 
           SizedBox(width: 4),
 
-          // signal
-          if (surfability == Surfability.surfschool)
-            Icon(Icons.signal_cellular_alt_1_bar_rounded, color: color),
+          //// signal
+          // if (surfability == Surfability.surfschool)
+          //   Icon(Icons.signal_cellular_alt_1_bar_rounded, color: color),
 
-          if (surfability == Surfability.surfable)
-            Icon(Icons.signal_cellular_alt_2_bar_rounded, color: color),
+          // if (surfability == Surfability.surfable)
+          //   Icon(Icons.signal_cellular_alt_2_bar_rounded, color: color),
 
-          if (surfability == Surfability.works)
-            Icon(Icons.signal_cellular_alt_rounded, color: color),
+          // if (surfability == Surfability.works)
+          //   Icon(Icons.signal_cellular_alt_rounded, color: color),
 
-          if (surfability == Surfability.on)
-            Icon(Icons.signal_cellular_alt_sharp, color: color),
+          // if (surfability == Surfability.on)
+          //   Icon(Icons.signal_cellular_alt_sharp, color: color),
+
+          // BAR
+          HourlyScoreBarChart(hourlyScores: hourlyScores),
         ],
       ),
     );

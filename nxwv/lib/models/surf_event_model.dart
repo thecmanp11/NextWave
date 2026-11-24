@@ -37,6 +37,7 @@ class SurfEvent {
     required this.meanScore,
     required this.label,
     required this.surfableHours,
+    this.hourlyScores,
   });
 
   final String spot;
@@ -47,8 +48,18 @@ class SurfEvent {
   final double meanScore;
   final Surfability label;
   final int surfableHours;
+  final Map<DateTime, double>? hourlyScores;
 
   factory SurfEvent.fromJson(Map<String, dynamic> json) {
+    final rawHourly = json['hourly_scores'] as Map<String, dynamic>?;
+
+    final parsedHourly = rawHourly?.map(
+      (key, value) => MapEntry(
+        DateTime.parse(key),
+        (value as num).toDouble(),
+      ),
+    );
+
     return SurfEvent(
       spot: json['spot'] as String,
       start: DateTime.parse(json['start'] as String),
@@ -59,6 +70,7 @@ class SurfEvent {
       // label: json['label'] as String,
       label: Surfability.fromPeakScore((json['peak_score'] as num).toDouble()),
       surfableHours: (json['surfable_hours'] as num).toInt(),
+      hourlyScores: parsedHourly,
     );
   }
 }

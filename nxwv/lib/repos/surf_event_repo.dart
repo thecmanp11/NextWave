@@ -12,7 +12,7 @@ import 'package:nxwv/models/surf_event_model.dart';
 /// Change `pollInterval` to `null` if you only want a single emission on load.
 class PsuedoSurfEventRepo {
   PsuedoSurfEventRepo({
-    this.assetPath = 'assets/data/local_results.json',
+    this.assetPath = 'assets/data/local_results_v2.json',
     this.pollInterval = const Duration(seconds: 3),
   });
 
