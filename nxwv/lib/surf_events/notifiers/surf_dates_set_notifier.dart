@@ -15,18 +15,43 @@ class SurfDatesSetNotifier extends Notifier<List<DateTime>> {
     final surfEventAsync = ref.watch(surfEventsStreamProvider);
     if (!surfEventAsync.hasValue) {
       return [];
-    } else {
-      final List<SurfEvent> surfEvents = surfEventAsync.value!;
-      final Set<DateTime> dateSet = {};
-      for (var event in surfEvents) {
-        final startDate = event.start;
-        dateSet.add(startDate);
-      }
-      final dateList = dateSet.toList();
-      return dateList;
     }
+
+    // final spotsMap = ref.watch(surfSpotProvider).value ?? const {};
+    final surfEvents = surfEventAsync.value!;
+    final Set<DateTime> dateSet = {};
+
+    for (final event in surfEvents) {
+      // Convert to the spot's timezone first, then strip hours/minutes/seconds
+      // final spotDt = toSpotTime(event.start, spotsMap[event.spot]?.timezone);
+      // dateSet.add(DateTime(spotDt.year, spotDt.month, spotDt.day));
+      dateSet.add(
+        DateTime(event.start.year, event.start.month, event.start.day),
+      );
+    }
+
+    return dateSet.toList()..sort((a, b) => a.compareTo(b));
   }
 }
+
+// class SurfDatesSetNotifier extends Notifier<List<DateTime>> {
+//   @override
+//   List<DateTime> build() {
+//     final surfEventAsync = ref.watch(surfEventsStreamProvider);
+//     if (!surfEventAsync.hasValue) {
+//       return [];
+//     } else {
+//       final List<SurfEvent> surfEvents = surfEventAsync.value!;
+//       final Set<DateTime> dateSet = {};
+//       for (var event in surfEvents) {
+//         final startDate = event.start;
+//         dateSet.add(startDate);
+//       }
+//       final dateList = dateSet.toList();
+//       return dateList;
+//     }
+//   }
+// }
 
 final surfDatesSetProvider =
     NotifierProvider<SurfDatesSetNotifier, List<DateTime>>(

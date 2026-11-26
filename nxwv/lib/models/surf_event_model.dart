@@ -11,6 +11,7 @@ just a SPOT model... so a doc per spot
 enum Surfability {
   surfschool('Surf School Slop', 1, kNwPeri),
   surfable('Surfable', 2, kNwLBlue),
+  // TODO: maybe Surfable - small and - strong
   works('Works', 3, kNwSurf),
   on('ON!', 4, kNwMint);
 

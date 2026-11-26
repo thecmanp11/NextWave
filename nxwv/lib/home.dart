@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nxwv/surf_events/scrolls/surf_event_grid.dart';
-import 'package:nxwv/surf_events/scrolls/surf_event_scroll.dart';
 import 'package:nxwv/surf_events/ui/surf_event_filters.dart';
 
 class HomeBase extends StatelessWidget {
@@ -14,7 +13,6 @@ class HomeBase extends StatelessWidget {
       body: Column(
         children: [
           // SurfEventFilters(),
-          // SurfEventScroll(),
           SurfEventGrid(),
         ],
       ),
