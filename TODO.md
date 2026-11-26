@@ -39,5 +39,8 @@ currently assuming offshore waves = beach waves which is not true
 locally or cloud?
 
 # design UI
+need to implement filters
+NXWV wave as the web app icon for browser
+then top logo NX(.)WV
 
 # publish
