@@ -156,24 +156,23 @@ def to_hour_records(df: pd.DataFrame, depth_m: float | None) -> list[dict]:
 def main() -> None:
     ensure_auth()
 
-    # TODO: UNCOMMENT - skipping download for testing
-    copernicusmarine.subset(
-        dataset_id=STATIC_DATASET_ID,
-        output_filename="static.nc",
-        output_directory="data",
-        overwrite=True,
-        **BBOX,
-    )
-    copernicusmarine.subset(
-        dataset_id=WAVE_DATASET_ID,
-        variables=WAVE_VARS,
-        start_datetime=START.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        end_datetime=END.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        output_filename="waves.nc",
-        output_directory="data",
-        overwrite=True,
-        **BBOX,
-    )
+    # copernicusmarine.subset(
+    #     dataset_id=STATIC_DATASET_ID,
+    #     output_filename="static.nc",
+    #     output_directory="data",
+    #     overwrite=True,
+    #     **BBOX,
+    # )
+    # copernicusmarine.subset(
+    #     dataset_id=WAVE_DATASET_ID,
+    #     variables=WAVE_VARS,
+    #     start_datetime=START.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    #     end_datetime=END.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    #     output_filename="waves.nc",
+    #     output_directory="data",
+    #     overwrite=True,
+    #     **BBOX,
+    # )
 
     with xr.open_dataset("data/static.nc") as s_raw:
         static_ds = s_raw.load()
@@ -201,8 +200,20 @@ def main() -> None:
         text=True,
         check=True,
     )
+
+    # with open("surf_engine/local_results.json", "w", encoding="utf-8") as f:
+    #     json.dump(json.loads(out.stdout), f, indent=2)
+
+    results = json.loads(out.stdout)  # {spot_name: [event, ...]}
+
+    # Flat list of surf events; each event already carries its own "spot" field
+    events = [event for spot_events in results.values() for event in spot_events]
+
+    # chronological order across all spots
+    # events.sort(key=lambda e: e["start"])
+
     with open("surf_engine/local_results.json", "w", encoding="utf-8") as f:
-        json.dump(json.loads(out.stdout), f, indent=2)
+        json.dump(events, f, indent=2)
 
 
 if __name__ == "__main__":
