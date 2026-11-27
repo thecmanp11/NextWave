@@ -39,6 +39,7 @@ class SurfEventGrid extends ConsumerWidget {
 
           // build sliver based on DATES -- then look UP events based on dates, sort them there
           return CustomScrollView(
+            physics: BouncingScrollPhysics(),
             slivers: [
               SliverList.builder(
                 itemCount: dateSet.length,
